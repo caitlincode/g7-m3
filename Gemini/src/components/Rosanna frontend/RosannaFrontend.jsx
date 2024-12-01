@@ -40,7 +40,12 @@ const AIJobInterviewer = () => {
         Do not repeat the same question and avoid hardcoded questions. Focus on job-specific skills, experiences, and scenarios.
         Make sure to move on from each topic within one question.
         `;
+      // cover a range of questions/topics within 6 questions
 
+      /* with this prompt it tends to stay on one topic for a while but the brief says to have the responses rely on the user answers,
+        and this seems to be Gemini's way of doing that.
+        if I make the prompt not build on user responses it tends to repeat the same question over and over again.
+        */
       const result = await model.generateContent(prompt);
 
       // Save the user's response and display the next question
@@ -124,6 +129,7 @@ const AIJobInterviewer = () => {
             disabled={loading}
             onKeyDown={(e) => {
               if (e.key === "Enter" && !e.shiftKey) {
+                // will need to change this, maybe adding button for next question?
                 e.preventDefault();
                 handleResponse(e.target.value);
                 e.target.value = ""; // Clear the input
