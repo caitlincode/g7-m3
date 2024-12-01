@@ -12,7 +12,7 @@ const AIJobInterviewer = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Initialize Google Generative AI
+  // Initialize Google Generative AI with my generated API key
   const genAI = new GoogleGenerativeAI(
     "AIzaSyBC16h2iWOSrNSRWgkezrOo6ayTwZuDH7s"
   );
@@ -21,6 +21,7 @@ const AIJobInterviewer = () => {
   // Start the interview
   const startInterview = () => {
     if (!role.trim()) {
+      // trim to remove white spaces from both ends of the string, also prevents interview from starting if only empty spaces are entered
       alert("Please specify a role to start the interview.");
       return;
     }
@@ -46,6 +47,10 @@ const AIJobInterviewer = () => {
       setResponses([
         ...responses,
         { question: currentQuestion, answer: userResponse },
+        /* saves current question and user response in the responses state (this state --array of objects where each obj contains a question
+         (the interviewers question) and an answer (the user's response))
+         Ensure a chronological history of all questions and responses is saved
+         */
       ]);
       setCurrentQuestion(result.response.text());
     } catch (err) {
