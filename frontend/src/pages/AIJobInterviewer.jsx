@@ -20,7 +20,7 @@ const AIJobInterviewer = () => {
     setInterviewStarted(true);
 
     try {
-      const response = await fetch("http://localhost:5000/start-interview", {
+      const response = await fetch("http://localhost:3000/start-interview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role }),
@@ -39,7 +39,7 @@ const AIJobInterviewer = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/next-question", {
+      const response = await fetch("http://localhost:3000/next-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role, userResponse }),
@@ -64,7 +64,7 @@ const AIJobInterviewer = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:5000/end-interview", {
+      const response = await fetch("http://localhost:3000/end-interview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role, responses }),
