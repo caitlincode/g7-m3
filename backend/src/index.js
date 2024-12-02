@@ -2,13 +2,15 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const cors = require("cors");
+// const dotenv = require("dotenv");
+// dotenv.config();
 
 const app = express();
 const PORT = 3000; // will move to dotenv file
 
 app.use(cors()); // Enable CORS for all origins by default
 
-// Initialize Google Generative AI with your API key - will move to dotenv file
+// Initialize Google Generative AI - API key will move
 const genAI = new GoogleGenerativeAI("AIzaSyBC16h2iWOSrNSRWgkezrOo6ayTwZuDH7s");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
