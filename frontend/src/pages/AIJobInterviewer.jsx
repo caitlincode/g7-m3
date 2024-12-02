@@ -11,7 +11,6 @@ const AIJobInterviewer = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Start the interview
   const startInterview = async () => {
     if (!role.trim()) {
       alert("Please specify a role to start the interview.");
@@ -25,6 +24,11 @@ const AIJobInterviewer = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to start the interview.");
+      }
+
       const data = await response.json();
       setCurrentQuestion(data.question);
     } catch (err) {
@@ -33,8 +37,12 @@ const AIJobInterviewer = () => {
     }
   };
 
-  // Handle user responses and generate the next question
   const handleResponse = async (userResponse) => {
+    if (!userResponse.trim()) {
+      alert("Please provide a valid response.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -44,12 +52,23 @@ const AIJobInterviewer = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role, userResponse }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate the next question.");
+      }
+
       const data = await response.json();
-      setResponses([
-        ...responses,
-        { question: currentQuestion, answer: userResponse },
-      ]);
-      setCurrentQuestion(data.question);
+
+      if (data.question === "Interview complete. Thank you!") {
+        setFeedback("Interview complete. Thank you for your responses!");
+        setInterviewStarted(false);
+      } else {
+        setResponses([
+          ...responses,
+          { question: currentQuestion, answer: userResponse },
+        ]);
+        setCurrentQuestion(data.question);
+      }
     } catch (err) {
       console.error("Error generating next question:", err);
       setError("Failed to generate the next question.");
@@ -58,7 +77,6 @@ const AIJobInterviewer = () => {
     }
   };
 
-  // End the interview and generate feedback
   const endInterview = async () => {
     setLoading(true);
     setError(null);
@@ -69,6 +87,11 @@ const AIJobInterviewer = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role, responses }),
       });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate feedback.");
+      }
+
       const data = await response.json();
       setFeedback(data.feedback);
     } catch (err) {
@@ -107,7 +130,6 @@ const AIJobInterviewer = () => {
         <div>
           <h2>Interviewer:</h2>
           <p>{currentQuestion}</p>
-
           <textarea
             rows="4"
             cols="50"
@@ -129,6 +151,13 @@ const AIJobInterviewer = () => {
             disabled={loading}
           >
             Finish Interview
+          </button>
+          <button
+            onClick={() => handleResponse("")}
+            style={{ padding: "10px 20px", marginTop: "10px" }}
+            disabled={loading}
+          >
+            Next Question
           </button>
         </div>
       )}
