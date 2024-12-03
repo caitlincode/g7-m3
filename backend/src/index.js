@@ -153,11 +153,11 @@ app.post("/next-question", async (req, res) => {
 
   try {
     const prompt = `
-      Act as a job interviewer for the role of ${session.role}. 
-      Based on the user's response "${userResponse}", generate the next interview question. 
-      Do not repeat the same question and avoid hardcoded questions. 
+      Act as a job interviewer for the role of ${session.role}.
+      Based on the user's response "${userResponse}", generate the next interview question.
+      Do not repeat the same question and avoid hardcoded questions.
       Focus on job-specific skills, experiences, and scenarios.
-      The interview should be over in 6 questions. 
+      The interview should be over in 6 questions.
       Question ${session.questionsAsked + 1}/6:
     `;
 
