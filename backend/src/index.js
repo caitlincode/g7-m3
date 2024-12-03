@@ -8,7 +8,7 @@ const cors = require("cors");
 const app = express();
 const PORT = 3000; // will move to dotenv file
 
-app.use(cors()); // Enable CORS for all origins by default
+app.use(cors());
 
 // Initialize Google Generative AI - API key will move
 const genAI = new GoogleGenerativeAI("AIzaSyBC16h2iWOSrNSRWgkezrOo6ayTwZuDH7s");

@@ -59,7 +59,8 @@ const AIJobInterviewer = () => {
 
       const data = await response.json();
 
-      if (data.question === "Interview complete. Thank you!") {
+      // Check if the backend indicates that the interview has ended
+      if (!data.question) {
         setFeedback("Interview complete. Thank you for your responses!");
         setInterviewStarted(false);
       } else {
@@ -152,6 +153,7 @@ const AIJobInterviewer = () => {
           >
             Finish Interview
           </button>
+
           <button
             onClick={() => handleResponse("")}
             style={{ padding: "10px 20px", marginTop: "10px" }}
