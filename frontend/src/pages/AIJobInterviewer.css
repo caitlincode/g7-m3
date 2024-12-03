@@ -1,0 +1,82 @@
+.interviewer-container {
+    font-family: "Arial", sans-serif;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .interviewer-header {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .interviewer-logo {
+    width: 100px;
+    margin-bottom: 10px;
+  }
+  
+  h1 {
+    color: #333;
+  }
+  
+  .interview-start,
+  .interview-session,
+  .feedback-section {
+    text-align: center;
+  }
+  
+  .role-input-label {
+    display: block;
+    margin: 20px 0;
+  }
+  
+  .role-input {
+    padding: 10px;
+    width: 60%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-top: 5px;
+  }
+  
+  .start-button,
+  .next-button,
+  .finish-button {
+    padding: 10px 20px;
+    margin: 10px 5px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .start-button:hover,
+  .next-button:hover,
+  .finish-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .response-input {
+    width: 90%;
+    height: 80px;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  .error-message {
+    color: red;
+    margin-top: 10px;
+  }
+  
+  .question {
+    font-size: 18px;
+    color: #333;
+    margin: 20px 0;
+  }
+  
