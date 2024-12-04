@@ -1,11 +1,18 @@
-.interviewer-container {
-    font-family: "Arial", sans-serif;
-    padding: 20px;
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .interviewer-container {
     max-width: 800px;
     margin: 0 auto;
-    background: #f9f9f9;
+    padding: 20px;
+    background: #fff;
     border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .interviewer-header {
@@ -14,69 +21,133 @@
   }
   
   .interviewer-logo {
-    width: 100px;
+    width: 80px;
+    height: auto;
     margin-bottom: 10px;
   }
   
   h1 {
     color: #333;
+    font-size: 24px;
   }
   
-  .interview-start,
-  .interview-session,
-  .feedback-section {
-    text-align: center;
+  /* Role Selection Section */
+  .role-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
   }
   
-  .role-input-label {
-    display: block;
-    margin: 20px 0;
+  .role-label {
+    font-size: 18px;
+    color: #555;
   }
   
   .role-input {
     padding: 10px;
-    width: 60%;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
     border-radius: 4px;
-    margin-top: 5px;
+    font-size: 16px;
   }
   
-  .start-button,
-  .next-button,
-  .finish-button {
+  .start-button {
     padding: 10px 20px;
-    margin: 10px 5px;
+    background-color: #007bff;
+    color: #fff;
     border: none;
     border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s;
   }
   
-  .start-button:hover,
-  .next-button:hover,
-  .finish-button:hover {
+  .start-button:disabled {
+    background-color: #bbb;
+  }
+  
+  .start-button:hover:not(:disabled) {
     background-color: #0056b3;
   }
   
-  .response-input {
-    width: 90%;
-    height: 80px;
-    margin-top: 10px;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  
-  .error-message {
-    color: red;
-    margin-top: 10px;
+  /* Interview Session Section */
+  .interview-session {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
   }
   
   .question {
     font-size: 18px;
     color: #333;
-    margin: 20px 0;
+  }
+  
+  .response-input {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+  }
+  
+  .button-group {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .next-button,
+  .finish-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .next-button {
+    background-color: #28a745;
+    color: #fff;
+  }
+  
+  .next-button:disabled {
+    background-color: #bbb;
+  }
+  
+  .next-button:hover:not(:disabled) {
+    background-color: #218838;
+  }
+  
+  .finish-button {
+    background-color: #dc3545;
+    color: #fff;
+  }
+  
+  .finish-button:disabled {
+    background-color: #bbb;
+  }
+  
+  .finish-button:hover:not(:disabled) {
+    background-color: #c82333;
+  }
+  
+  /* Feedback Section */
+  .feedback-section {
+    text-align: center;
+  }
+  
+  .feedback-section h2 {
+    color: #28a745;
+  }
+  
+  .feedback-section p {
+    font-size: 16px;
+    color: #555;
+  }
+  
+  /* Error Message */
+  .error-message {
+    color: #dc3545;
+    font-size: 14px;
+    margin-top: 10px;
   }
   

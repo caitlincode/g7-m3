@@ -1,16 +1,20 @@
-import { useState, useRef } from "react";
+import { useState, useRef } from "react"; 
 import "./AIJobInterviewer.css";
 
 const AIJobInterviewer = () => {
-  const [role, setRole] = useState("");
-  const [interviewStarted, setInterviewStarted] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState("");
-  const [responses, setResponses] = useState([]);
-  const [feedback, setFeedback] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [sessionId, setSessionId] = useState(null);
+  // State variables for interview process
+  const [role, setRole] = useState(""); // Job role input by user
+  const [interviewStarted, setInterviewStarted] = useState(false); // Tracks if the interview has started
+  const [currentQuestion, setCurrentQuestion] = useState(""); // Current interview question
+  const [responses, setResponses] = useState([]); // Stores user responses to questions
+  const [feedback, setFeedback] = useState(""); // Feedback after the interview ends
+  const [loading, setLoading] = useState(false); // Loading state for API requests
+  const [error, setError] = useState(null); // Error messages
+  const [sessionId, setSessionId] = useState(null); // Session ID for the interview
 
+  const responseInputRef = useRef(null); // Ref for the response input field
+
+  // Function to start the interview
   const startInterview = async () => {
     if (!role.trim()) {
       alert("Please specify a role to start the interview.");
@@ -43,6 +47,7 @@ const AIJobInterviewer = () => {
     }
   };
 
+  // Function to handle user's response to a question
   const handleResponse = async (userResponse) => {
     if (!userResponse.trim()) {
       alert("Please provide a valid response.");
@@ -66,8 +71,7 @@ const AIJobInterviewer = () => {
       const data = await response.json();
 
       if (data.complete) {
-        // Automatically transition to the end interview process
-        await endInterview();
+        await endInterview(); // Automatically end interview if complete
       } else {
         setResponses([
           ...responses,
@@ -75,9 +79,8 @@ const AIJobInterviewer = () => {
         ]);
         setCurrentQuestion(data.question);
 
-        // Clear input field
         if (responseInputRef.current) {
-          responseInputRef.current.value = "";
+          responseInputRef.current.value = ""; // Clear input field
         }
       }
     } catch (err) {
@@ -88,6 +91,7 @@ const AIJobInterviewer = () => {
     }
   };
 
+  // Function to end the interview and get feedback
   const endInterview = async () => {
     setLoading(true);
     setError(null);
@@ -105,7 +109,6 @@ const AIJobInterviewer = () => {
 
       const data = await response.json();
       setFeedback(data.feedback);
-      // Do not reset `interviewStarted` here to avoid returning to the start screen
     } catch (err) {
       console.error("Error ending the interview:", err);
       setError("Failed to generate feedback. Please try again.");
@@ -116,6 +119,7 @@ const AIJobInterviewer = () => {
 
   return (
     <div className="interviewer-container">
+      {/* Header Section */}
       <header className="interviewer-header">
         <img
           src="src/assets/images/interview.png"
@@ -125,20 +129,23 @@ const AIJobInterviewer = () => {
         <h1>AI Job Interviewer</h1>
       </header>
 
+      {/* Main Content */}
       {!interviewStarted && !feedback ? (
-        <div>
-          <label>
-            Enter the Job Role:{" "}
-            <input
-              type="text"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="role-input"
-            />
+        <div className="role-selection">
+          <label htmlFor="role" className="role-label">
+            Enter the Job Role:
           </label>
+          <input
+            id="role"
+            type="text"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className="role-input"
+            placeholder="e.g., Software Engineer"
+          />
           <button
             onClick={startInterview}
-            style={{ padding: "10px 20px" }}
+            className="start-button"
             disabled={loading}
           >
             {loading ? "Starting..." : "Start Interview"}
@@ -159,24 +166,27 @@ const AIJobInterviewer = () => {
             placeholder="Type your response here..."
             disabled={loading}
           ></textarea>
-          <button
-            className="next-button"
-            onClick={() => handleResponse(responseInputRef.current.value)}
-            disabled={loading}
-          >
-            {loading ? "Loading..." : "Next Question"}
-          </button>
+          <div className="button-group">
+            <button
+              className="next-button"
+              onClick={() => handleResponse(responseInputRef.current.value)}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "Next Question"}
+            </button>
 
-          <button
-            className="finish-button"
-            onClick={endInterview}
-            disabled={loading}
-          >
-            Finish Interview
-          </button>
+            <button
+              className="finish-button"
+              onClick={endInterview}
+              disabled={loading}
+            >
+              Finish Interview
+            </button>
+          </div>
         </div>
       )}
 
+      {/* Error Message Display */}
       {error && <div className="error-message">{error}</div>}
     </div>
   );
