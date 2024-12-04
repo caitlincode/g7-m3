@@ -27,7 +27,8 @@ const AIJobInterviewer = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to start the interview.");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to start the interview.");
       }
 
       const data = await response.json();
@@ -36,7 +37,7 @@ const AIJobInterviewer = () => {
       setInterviewStarted(true);
     } catch (err) {
       console.error("Error starting interview:", err);
-      setError("Failed to start the interview.");
+      setError(err.message);
     } finally {
       setLoading(false);
     }
