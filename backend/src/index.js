@@ -21,23 +21,42 @@ app.get("/", (req, res) => {
 });
 
 // Endpoint for starting the interview and generating the first question
-app.post("/start-interview", (req, res) => {
+app.post("/start-interview", async (req, res) => {
   const { role } = req.body;
+
   if (!role) {
     return res.status(400).json({ error: "Role is required" });
   }
 
-  const sessionId = `session-${Date.now()}`;
-  interviews[sessionId] = {
-    role,
-    questionsAsked: 1, // Initialize with the first question
-    history: [{ question: "Tell me about yourself." }], // First question
-  };
+  try {
+    const validationPrompt = `
+      Validate if "${role}" is a recognized and valid job role.
+      Respond with "Valid" if the role exists, otherwise respond with "Invalid".
+    `;
+    const validationResult = await model.generateContent(validationPrompt);
+    const validationResponse = validationResult.response.text().trim();
 
-  res.json({
-    sessionId,
-    question: "Tell me about yourself.",
-  });
+    if (validationResponse.toLowerCase() !== "valid") {
+      return res.status(400).json({
+        error: `"${role}" is not a valid role. Please enter a valid role.`,
+      });
+    }
+
+    const sessionId = `session-${Date.now()}`;
+    interviews[sessionId] = {
+      role,
+      questionsAsked: 1,
+      history: [{ question: "Tell me about yourself." }],
+    };
+
+    res.json({
+      sessionId,
+      question: "Tell me about yourself.",
+    });
+  } catch (err) {
+    console.error("Error validating role:", err);
+    res.status(500).json({ error: "Failed to validate the role." });
+  }
 });
 
 app.post("/next-question", async (req, res) => {

@@ -133,7 +133,7 @@ When the interview comes to a conclusion, the user must click End Interview to r
 
 ## Acknowledgments
 
-Use this space to list resources you find helpful and would like to give credit to. I've included a few of my favorites to kick things off!
+Helpful resources
 
 - [Google Gemini](https://ai.google.dev/gemini-api/docs)
 - [GitHub](https://github.com)
