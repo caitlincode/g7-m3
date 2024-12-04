@@ -2,19 +2,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const cors = require("cors");
-// const dotenv = require("dotenv");
-// dotenv.config();
 
 const app = express();
-const PORT = 3000; // will move to dotenv file
+const PORT = 3000; // Move this to dotenv in production
 
-app.use(cors()); // Enable CORS for all origins by default
+app.use(cors());
+app.use(bodyParser.json());
 
-// Initialize Google Generative AI - API key will move
+// Initialize Google Generative AI
 const genAI = new GoogleGenerativeAI("AIzaSyBC16h2iWOSrNSRWgkezrOo6ayTwZuDH7s");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-app.use(bodyParser.json());
+// In-memory state for interview progress
+const interviews = {}; // Tracks questions count and history for each session
 
 app.get("/", (req, res) => {
   res.send("AI Job Interviewer API - Server test successful");
@@ -26,30 +26,60 @@ app.post("/start-interview", (req, res) => {
   if (!role) {
     return res.status(400).json({ error: "Role is required" });
   }
-  const initialQuestion = "Tell me about yourself.";
-  res.json({ question: initialQuestion });
+
+  const sessionId = `session-${Date.now()}`;
+  interviews[sessionId] = {
+    role,
+    questionsAsked: 1, // Initialize with the first question
+    history: [{ question: "Tell me about yourself." }], // First question
+  };
+
+  res.json({
+    sessionId,
+    question: "Tell me about yourself.",
+  });
 });
 
-// Endpoint for handling user responses and generating the next question
 app.post("/next-question", async (req, res) => {
-  const { role, userResponse } = req.body;
+  const { sessionId, userResponse } = req.body;
 
-  if (!role || !userResponse) {
+  if (!sessionId || !userResponse) {
     return res
       .status(400)
-      .json({ error: "Role and user response are required" });
+      .json({ error: "Session ID and user response are required" });
+  }
+
+  const session = interviews[sessionId];
+  if (!session) {
+    return res.status(400).json({ error: "Invalid session ID" });
+  }
+
+  if (session.questionsAsked >= 6) {
+    // Automatically notify that the interview is complete
+    return res.json({
+      message: "The interview has concluded. Thank you!",
+      session,
+      complete: true, // Added flag for frontend
+    });
   }
 
   try {
     const prompt = `
-      Act as a job interviewer for the role of ${role}. 
-      Based on the user's response "${userResponse}", generate the next interview question. 
-      Do not repeat the same question and avoid hardcoded questions. 
+      Act as a job interviewer for the role of ${session.role}.
+      Based on the user's response "${userResponse}", generate the next interview question.
+      Do not repeat the same question and avoid hardcoded questions.
       Focus on job-specific skills, experiences, and scenarios.
+      The interview should be over in 6 questions.
+      Question ${session.questionsAsked + 1}/6:
     `;
 
     const result = await model.generateContent(prompt);
-    res.json({ question: result.response.text() });
+    const nextQuestion = result.response.text();
+
+    session.questionsAsked += 1;
+    session.history.push({ question: nextQuestion });
+
+    res.json({ question: nextQuestion, complete: false });
   } catch (err) {
     console.error("Error generating next question:", err);
     res.status(500).json({ error: "Failed to generate the next question" });
@@ -58,10 +88,17 @@ app.post("/next-question", async (req, res) => {
 
 // Endpoint for ending the interview and generating feedback
 app.post("/end-interview", async (req, res) => {
-  const { role, responses } = req.body;
+  const { sessionId, responses } = req.body;
 
-  if (!role || !responses || responses.length === 0) {
-    return res.status(400).json({ error: "Role and responses are required" });
+  if (!sessionId || !responses || responses.length === 0) {
+    return res
+      .status(400)
+      .json({ error: "Session ID and responses are required" });
+  }
+
+  const session = interviews[sessionId];
+  if (!session) {
+    return res.status(400).json({ error: "Invalid session ID" });
   }
 
   try {
@@ -70,7 +107,7 @@ app.post("/end-interview", async (req, res) => {
       .join("\n");
 
     const feedbackPrompt = `
-      Act as a job interviewer for the role of ${role}.
+      Act as a job interviewer for the role of ${session.role}.
       Here are the user's responses:\n${allResponses}.
       Provide feedback on how well the user answered the questions and suggest how they can improve their responses.
     `;

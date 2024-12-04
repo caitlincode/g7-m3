@@ -9,15 +9,14 @@ const AIJobInterviewer = () => {
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const responseInputRef = useRef(null);
+  const [sessionId, setSessionId] = useState(null);
 
   const startInterview = async () => {
     if (!role.trim()) {
       alert("Please specify a role to start the interview.");
       return;
     }
-    setInterviewStarted(true);
+
     setLoading(true);
     setError(null);
 
@@ -33,11 +32,12 @@ const AIJobInterviewer = () => {
       }
 
       const data = await response.json();
+      setSessionId(data.sessionId);
       setCurrentQuestion(data.question);
+      setInterviewStarted(true);
     } catch (err) {
       console.error("Error starting interview:", err);
-      setError("Failed to start the interview. Please try again.");
-      setInterviewStarted(false);
+      setError("Failed to start the interview.");
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ const AIJobInterviewer = () => {
       const response = await fetch("http://localhost:3000/next-question", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role, userResponse }),
+        body: JSON.stringify({ sessionId, userResponse }),
       });
 
       if (!response.ok) {
@@ -65,9 +65,9 @@ const AIJobInterviewer = () => {
 
       const data = await response.json();
 
-      if (data.question === "Interview complete. Thank you!") {
-        setFeedback(data.feedback || "Interview complete. Thank you for your responses!");
-        setInterviewStarted(false);
+      if (data.complete) {
+        // Automatically transition to the end interview process
+        await endInterview();
       } else {
         setResponses([
           ...responses,
@@ -96,7 +96,7 @@ const AIJobInterviewer = () => {
       const response = await fetch("http://localhost:3000/end-interview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role, responses }),
+        body: JSON.stringify({ sessionId, responses }),
       });
 
       if (!response.ok) {
@@ -105,7 +105,7 @@ const AIJobInterviewer = () => {
 
       const data = await response.json();
       setFeedback(data.feedback);
-      setInterviewStarted(false);
+      // Do not reset `interviewStarted` here to avoid returning to the start screen
     } catch (err) {
       console.error("Error ending the interview:", err);
       setError("Failed to generate feedback. Please try again.");
@@ -125,12 +125,10 @@ const AIJobInterviewer = () => {
         <h1>AI Job Interviewer</h1>
       </header>
 
-      {!interviewStarted ? (
-        <div className="interview-start">
-          <h2>Welcome</h2><br></br>
-          <p>Prepare for your next job interview with AI assistance.</p>
-          <label className="role-input-label">
-            Enter the Job Role:
+      {!interviewStarted && !feedback ? (
+        <div>
+          <label>
+            Enter the Job Role:{" "}
             <input
               type="text"
               value={role}
@@ -139,8 +137,8 @@ const AIJobInterviewer = () => {
             />
           </label>
           <button
-            className="start-button"
             onClick={startInterview}
+            style={{ padding: "10px 20px" }}
             disabled={loading}
           >
             {loading ? "Starting..." : "Start Interview"}
@@ -168,6 +166,7 @@ const AIJobInterviewer = () => {
           >
             {loading ? "Loading..." : "Next Question"}
           </button>
+
           <button
             className="finish-button"
             onClick={endInterview}
