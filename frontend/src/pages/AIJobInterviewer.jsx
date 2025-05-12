@@ -21,7 +21,7 @@ const AIJobInterviewer = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/interviewer/start-interview",
+        `${import.meta.env.VITE_API_URL}/interviewer/start-interview`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -57,7 +57,7 @@ const AIJobInterviewer = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/interviewer/next-question",
+        `${import.meta.env.VITE_API_URL}/interviewer/next-question`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -95,7 +95,7 @@ const AIJobInterviewer = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3000/interviewer/end-interview",
+        `${import.meta.env.VITE_API_URL}/interviewer/end-interview`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
